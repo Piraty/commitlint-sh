@@ -1,0 +1,40 @@
+#!/bin/sh
+# commitlint FILE.. - lint your commits per conventionalcommits spec
+# https://www.conventionalcommits.org/en/v1.0.0/
+
+set -eu
+
+error() {
+	printf 'ERROR: (%s) %s\n' "$(head -n1 "$SRC")" "$@" >&2
+	exit 1
+}
+
+lint() {
+	pattern="$1"
+	head -n1 "$SRC" | grep -E -q "$pattern"
+}
+
+if [ -p /dev/stdin ]; then
+	# save piped data to file, we need to read it multiple times
+	f="$(mktemp)" && trap 'rm $f' 0
+	cat /dev/stdin >"$f"
+	set -- "$f"
+elif [ "$#" -gt 0 ]; then
+	:
+else
+	error "Invalid input"
+fi
+
+for f; do
+	SRC="$f"
+
+	# custom rules
+	lint "^initial commit$" && continue
+
+	# https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional
+	lint "^[a-z]+:" || error "missing type. use '{TYPE}: {SUBJECT}'"
+	lint "^(build|chore|ci|docs?|feat|fix|perf|refactor|revert|style|tests?):" || error "invalid TYPE"
+	lint "^[a-z]+: [a-z]" || error "SUBJECT needs to start with lowercase word"
+	lint "^[a-z]+: [a-z].{2,}" || error "SUBJECT is expected to be at least 3 chars"
+	lint "[^\.]$" || error "SUBJECT should not end with full-stop"
+done

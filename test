@@ -1,0 +1,30 @@
+#!/bin/sh
+#
+
+_test_count=0
+_test_num="$(grep -c '^_test ' "$(basename "$0")")"
+_test() {
+	_test_count=$((_test_count + 1))
+
+	(
+		if [ "$1" = "!" ]; then
+			(# only shift in subshell
+				shift
+				echo "$*" | ./commitlint 2>&1 | grep -q ERROR
+			)
+		else
+			echo "$*" | ./commitlint
+		fi
+	) &&
+		echo "(${_test_count}/${_test_num}) PASS '$*'" ||
+		echo "(${_test_count}/${_test_num}) FAIL '$*'"
+}
+
+# custom rules
+_test "initial commit"
+_test ! "initial Commit"
+
+# conventionalcommits
+_test "feat: foo"
+_test ! "invalid: foo"
+_test ! "documentation: foo"
