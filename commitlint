@@ -1,21 +1,27 @@
 #!/bin/sh
-# commitlint FILE.. - lint your commits per conventionalcommits spec
-# https://www.conventionalcommits.org/en/v1.0.0/
+# commitlint FILE.. - lint your commits
+#
+# ... as per the conventionalcommits spec [1].
+#
+# EXAMPLE:
+# 	git show --no-patch --pretty='format:%s' | commitlint
+#
+# [1]: https://www.conventionalcommits.org/en/v1.0.0/
 
 set -eu
 
 error() {
-	printf 'ERROR: (%s) %s\n' "$(head -n1 "$SRC")" "$@" >&2
+	printf 'ERROR: "%s" - %s\n' "$(head -n1 "$SRC")" "$@" >&2
 	exit 1
 }
 
 lint() {
 	pattern="$1"
-	head -n1 "$SRC" | grep -E -q "$pattern"
+	head -n1 "$SRC" | grep -q -E "$pattern"
 }
 
 if [ -p /dev/stdin ]; then
-	# save piped data to file, we need to read it multiple times
+	# save piped data to file, as we need to read it multiple times
 	f="$(mktemp)" && trap 'rm $f' 0
 	cat /dev/stdin >"$f"
 	set -- "$f"
