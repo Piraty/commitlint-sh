@@ -36,11 +36,25 @@ for f; do
 
 	# custom rules
 	lint "^initial commit$" && continue
+	lint '^Revert ".+"' && continue
 
-	# https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional
-	lint "^[a-z]+:" || error "missing type. use '{TYPE}: {SUBJECT}'"
-	lint "^(build|chore|ci|docs?|feat|fix|perf|refactor|revert|style|tests?):" || error "invalid TYPE"
-	lint "^[a-z]+: [a-z]" || error "SUBJECT needs to start with lowercase word"
-	lint "^[a-z]+: [a-z].{2,}" || error "SUBJECT is expected to be at least 3 chars"
+	# https://github.com/conventional-changelog/commitlint/tree/b12ec06/%40commitlint/config-conventional
+
+	scope="(|\([[:alnum:]\/_-]+\))"
+
+	## type
+	lint "^[a-zA-Z]+.*:" || error "missing TYPE. use '{TYPE}: {SUBJECT}'"
+	lint "^[a-z]+.*:" || error "TYPE needs to start with lowercase word"
+	lint "^(build|chore|ci|docs?|feat|fix|perf|refactor|revert|style|tests?)[^[:alnum:]]+" || error "invalid TYPE"
+
+	# breaking indicator
+	lint "^[a-z]+(|\(.*\))(|!):" || error "Breaking Indicator malformed"
+
+	## scope
+	lint "^[a-z]+${scope}(|!):" || error "SCOPE malformed"
+
+	## subject
+	lint "^[a-z]+.*: [a-z]" || error "SUBJECT needs to start with lowercase word"
+	lint "^[a-z]+.*: [a-z].{2,}" || error "SUBJECT is expected to be at least 3 chars"
 	lint "[^\.]$" || error "SUBJECT should not end with full-stop"
 done
