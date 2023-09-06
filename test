@@ -1,30 +1,91 @@
 #!/bin/sh
+# test commitlint-sh
 #
+text_red() {
+	[ -z "$NO_COLOR" ] && printf '\033[31m%s\033[m' "$@" || printf '%s\n' "$@"
+}
 
 _test_count=0
+failed=0
+passed=0
 _test_num="$(grep -c '^_test ' "$(basename "$0")")"
 _test() {
+	# if first arg is ! , test for failing command
+
+	assert_pass() {
+		echo "$*" | ./commitlint
+	}
+	assert_fail() {
+		echo "$*" | ./commitlint 2>&1 | grep -q ERROR
+	}
+	run_test_command() {
+		if [ "$1" = "!" ]; then
+			shift
+			assert_fail "$*"
+			return
+		else
+			assert_pass "$*"
+			return
+		fi
+	}
+
+	_command="$*"
 	_test_count=$((_test_count + 1))
 
-	(
-		if [ "$1" = "!" ]; then
-			(# only shift in subshell
-				shift
-				echo "$*" | ./commitlint 2>&1 | grep -q ERROR
-			)
-		else
-			echo "$*" | ./commitlint
-		fi
-	) &&
-		echo "(${_test_count}/${_test_num}) PASS '$*'" ||
-		echo "(${_test_count}/${_test_num}) FAIL '$*'"
+	if run_test_command "$@"; then
+		_result="PASS"
+		passed=$(( passed + 1 ))
+	else
+		failed=$(( failed + 1 ))
+		_result="$(text_red FAIL)"
+	fi
+
+	echo "(${_test_count}/${_test_num}) $_result '$_command'"
 }
 
 # custom rules
 _test "initial commit"
 _test ! "initial Commit"
+_test ! "Initial Commit"
+_test 'Revert "french toast"'
+_test 'Revert "initial commit"'
+_test ! 'revert "initial commit"'
+_test ! 'revert foo'
 
 # conventionalcommits
+## Subject
 _test "feat: foo"
-_test ! "invalid: foo"
 _test ! "documentation: foo"
+_test ! "invalid: foo"
+_test ! "Feat: foo"
+_test ! "feat: !foo"
+
+## Scope
+_test "feat(bar): foo"
+_test ! "feat(): foo"
+
+
+## !
+_test "feat!: foo"
+_test "feat(bar)!: foo"
+_test ! "feat!!: foo"
+_test ! "feat(bar)!!: foo"
+_test "feat!: foo!"
+_test "feat!: foo!!"
+_test "feat: foo!"
+_test "feat: foo!!"
+
+_test "feat(module): foo"
+_test "feat(package/module): foo"
+_test "feat(package/mod_ule): foo"
+
+_test "feat!: foo"
+_test "feat(module)!: foo"
+_test ! "feat!(module)!: foo"
+
+cat <<!
+
+SUMMARY
+$_test_count tests
+$failed failures
+!
