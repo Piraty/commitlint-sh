@@ -1,12 +1,11 @@
 #!/bin/sh
-# commitlint FILE.. - lint your commits
+# commitlint SUBJECT - lint your commits by conventionalcommits spec
 #
-# ... as per the conventionalcommits spec [1].
+# https://www.conventionalcommits.org/en/v1.0.0/
 #
 # EXAMPLE:
 # 	git show --no-patch --pretty='format:%s' | commitlint
-#
-# [1]: https://www.conventionalcommits.org/en/v1.0.0/
+# 	commitlint "feat: foo"
 
 set -eu
 
