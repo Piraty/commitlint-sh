@@ -34,9 +34,9 @@ _test() {
 
 	if run_test_command "$@"; then
 		_result="PASS"
-		passed=$(( passed + 1 ))
+		passed=$((passed + 1))
 	else
-		failed=$(( failed + 1 ))
+		failed=$((failed + 1))
 		_result="$(text_red FAIL)"
 	fi
 
@@ -63,7 +63,6 @@ _test ! "feat: !foo"
 ## Scope
 _test "feat(bar): foo"
 _test ! "feat(): foo"
-
 
 ## !
 _test "feat!: foo"
