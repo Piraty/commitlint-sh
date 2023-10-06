@@ -1,7 +1,32 @@
-# commitlint
+# commitlint-sh
 
-lint your commits per
+Lint your commits per
 [conventional commits specification](https://conventionalcommits.org/)
+
+Use this in post-commit hook and in your pipelines.
+
+Requires:
+
+* cat
+* grep
+* head
+* mktemp
+* sh
+
+Portable! Works with gnu-coreutils, busybox, toybox.
+
+
+## Usage
+
+`commitlint` fails with nonzero exit status if the provided commit subject
+doesn't conform conventionalcommits spec.
+
+    # good
+    echo "fix: some bugz" | commitlint
+
+    # bad
+    echo "malformed" | commitlint
+    commitlint "malformed"
 
 
 ## License
