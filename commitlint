@@ -6,6 +6,8 @@
 # EXAMPLE:
 # 	git show --no-patch --pretty='format:%s' | commitlint
 # 	commitlint "feat: foo"
+#
+# SPDX-License-Identifier: 0BSD
 
 set -eu
 
