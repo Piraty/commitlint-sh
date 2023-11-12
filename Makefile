@@ -12,8 +12,8 @@ install:
 	install -Dm0755 commitlint $(DESTDIR)$(BINDIR)/commitlint
 
 lint:
-	shellcheck commitlint
-	shfmt -d -p -ci commitlint
+	shellcheck commitlint test
+	shfmt -d -p -ci commitlint test
 
 lint-%:
 	git show --no-patch --pretty='format:%s' $(*) | ./commitlint
