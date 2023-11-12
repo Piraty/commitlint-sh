@@ -28,6 +28,9 @@ doesn't conform conventionalcommits spec.
     echo "malformed" | commitlint
     commitlint "malformed"
 
+    # example CI usage
+    git show --no-patch --pretty='format:%s' "${REF:-HEAD}" | commitlint
+
 
 ## License
 
