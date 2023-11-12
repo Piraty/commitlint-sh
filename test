@@ -61,10 +61,13 @@ _test ! "Feat: foo"
 _test ! "feat: !foo"
 
 ## Scope
-_test "feat(bar): foo"
 _test ! "feat(): foo"
+_test "feat(module): foo"
+_test "feat(module): foo bar baz"
+_test "feat(package/module): foo"
+_test "feat(package/mod_ule): foo"
 
-## !
+## Breaking Changes
 _test "feat!: foo"
 _test "feat(bar)!: foo"
 _test ! "feat!!: foo"
@@ -73,10 +76,6 @@ _test "feat!: foo!"
 _test "feat!: foo!!"
 _test "feat: foo!"
 _test "feat: foo!!"
-
-_test "feat(module): foo"
-_test "feat(package/module): foo"
-_test "feat(package/mod_ule): foo"
 
 _test "feat!: foo"
 _test "feat(module)!: foo"
