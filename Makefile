@@ -3,6 +3,9 @@ BINDIR = $(PREFIX)/bin
 DESTDIR ?=
 
 
+GITREVS = $(shell git log --no-patch --pretty='format:%H')
+
+
 all:
 
 install:
@@ -12,10 +15,11 @@ lint:
 	shellcheck commitlint
 	shfmt -d -p -ci commitlint
 
-dogfood:
-	for githash in $$(git log --no-patch --pretty='format:%H'); do \
-		git show --no-patch --pretty='format:%s' $$githash | ./commitlint \
-	; done
+lint-%:
+	git show --no-patch --pretty='format:%s' $(*) | ./commitlint
+
+dogfood: $(foreach rev,$(GITREVS),lint-$(rev))
+
 
 unittest:
 	sh ./test
