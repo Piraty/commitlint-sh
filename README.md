@@ -40,3 +40,4 @@ doesn't conform conventionalcommits spec.
 ## Similar Projects
 
 * [conventional-changelog/commitlint](https://github.com/conventional-changelog/commitlint)
+* [tomtom-international/commisery](https://github.com/tomtom-international/commisery)
